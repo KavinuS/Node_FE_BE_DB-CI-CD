@@ -20,6 +20,7 @@ function App() {
   return (
     <>
       <div className="m-4 flex flex-col items-center">
+      <div><h1>Helooooooo Kavinu</h1></div>
         {data.map((item, index) => (
           <div className="shadow p-4 m-4 rounded bg-white hover: transform hover:scale-101" key={index}>
             <h1 className="text-2xl">{item.name}</h1>

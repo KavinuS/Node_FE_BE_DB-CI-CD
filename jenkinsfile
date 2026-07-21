@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USERNAME = "dokerkavinu1"
-        FRONTEND_IMAGE = "dokerkavinu1/react-frontend"
-        BACKEND_IMAGE = "dokerkavinu1/node-backend"
+        DOCKERHUB_USERNAME = "dockerkavinu1"
+        FRONTEND_IMAGE = "dockerkavinu1/react-frontend"
+        BACKEND_IMAGE = "dockerkavinu1/node-backend"
     }
 
     stages {
@@ -36,7 +36,9 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                withCredentials([string(credentialsId: 'dockerhubpwd', variable: 'dockerhubpwd')]){
-                    bat "docker login -u %DOCKERHUB_USERNAME% -p %dockerhubpwd%"
+                    script {
+                        bat "docker login -u %DOCKERHUB_USERNAME% -p %dockerhubpwd%"
+                    }
                 }
             }
         }
