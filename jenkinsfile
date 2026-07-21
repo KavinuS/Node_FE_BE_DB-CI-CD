@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_USERNAME = "dokerkavinu1"
+        FRONTEND_IMAGE = "dokerkavinu1/react-frontend"
+        BACKEND_IMAGE = "dokerkavinu1/node-backend"
+    }
+
+    stages {
+
+        stage('SCM Checkout') {
+            steps {
+                retry(3) {
+                    git branch: 'main', url: 'https://github.com/KavinuS/Node_FE_BE_DB-CI-CD.git'
+                }
+            }
+        }
+
+        stage('Build Backend Image') {
+            steps {
+                dir('server') {
+                    bat "docker build -t %DOCKERHUB_USERNAME%/node-server:%BUILD_NUMBER% ."
+                }
+            }
+        }
+
+        stage('Build Frontend Image') {
+            steps {
+                dir('client') {
+                    bat "docker build -t %DOCKERHUB_USERNAME%/react-client:%BUILD_NUMBER% ."
+                }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+               withCredentials([string(credentialsId: 'dockerhubpwd', variable: 'dockerhubpwd')]){
+                    bat "docker login -u %DOCKERHUB_USERNAME% -p %dockerhubpwd%"
+                }
+            }
+        }
+
+        stage('Push Backend Image') {
+            steps {
+                bat "docker push %DOCKERHUB_USERNAME%/node-server:%BUILD_NUMBER%"
+            }
+        }
+
+        stage('Push Frontend Image') {
+            steps {
+                bat "docker push %DOCKERHUB_USERNAME%/react-client:%BUILD_NUMBER%"
+            }
+        }
+
+    }
+
+    post {
+        always {
+            bat 'docker logout'
+        }
+
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}
